@@ -154,29 +154,30 @@
                 source: function (request, response) {
                     console.log('here');
                     console.log(request);
-                    if ()
-                    $.ajax({
-                        url: "https://contentuatapiserver1.azurewebsites.net/devices?name=" + request.term,
-                        dataType: "json",
-                        type: "GET",
-                        contentType: "application/json; charset=utf-8",
-                        success: function (data) {
-                            console.log(data);
-                            globalDevices = data.devices;
-                            var arrBooks = [];
-                            $.map(data.devices, function (item) {
-                                if (!arrBooks.find(item1 => item1.value === item.Name)) {
-                                    arrBooks.push({ "value": item.Name, "label": item.Name });
-                                }
-                            })
-                            console.log(arrBooks)
-                            response(arrBooks);
+                    if (selectedItem) {
+                        $.ajax({
+                            url: "https://contentuatapiserver1.azurewebsites.net/devices?name=" + request.term,
+                            dataType: "json",
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                console.log(data);
+                                globalDevices = data.devices;
+                                var arrBooks = [];
+                                $.map(data.devices, function (item) {
+                                    if (!arrBooks.find(item1 => item1.value === item.Name)) {
+                                        arrBooks.push({ "value": item.Name, "label": item.Name });
+                                    }
+                                })
+                                console.log(arrBooks)
+                                response(arrBooks);
 
-                        },
-                        error: function (XMLHttpRequest, textStatus, errorThrown) {
-                            alert(textStatus);
-                        }
-                    });
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(textStatus);
+                            }
+                        });
+                    }
                 },
                 minLength: 3,
                 select: function (event, ui) {
