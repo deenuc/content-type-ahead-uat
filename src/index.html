@@ -16,6 +16,7 @@
 
     <script>
         var globalDevices = [];
+        var selectedItem;
         $(document).ready(function () {
             BindControls();
             $("#search").click(function () {
@@ -52,6 +53,9 @@
         function getDevicefromId(id) {
             console.log(id);
             var item = globalDevices.find(item => item.Id === id);
+            selectedItem = item;
+            var deviceHtml = 'Brand : <b> ' + item.Brand + ' </b> Model : <b> ' + item.Model + ' </b>'
+            $("#selectedDevice").html(deviceHtml);
             console.log(item)
             getKnowledge(item)
 
@@ -102,6 +106,9 @@
         function getDevicefromName(name) {
             console.log(name);
             var item = globalDevices.find(item => item.Name === name);
+            selectedItem = item;
+            var deviceHtml = 'Brand : <b> ' + item.Brand + ' </b> Model : <b> ' + item.Model + ' </b>'
+            $("#selectedDevice").html(deviceHtml);
             console.log(item)
             getKnowledge(item)
         }
@@ -112,6 +119,42 @@
                 source: function (request, response) {
                     console.log('here');
                     console.log(request);
+                    $.ajax({
+                        url: "https://contentuatapiserver1.azurewebsites.net/devices?name=" + request.term,
+                        dataType: "json",
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            console.log(data);
+                            globalDevices = data.devices;
+                            var arrBooks = [];
+                            $.map(data.devices, function (item) {
+                                if (!arrBooks.find(item1 => item1.value === item.Name)) {
+                                    arrBooks.push({ "value": item.Name, "label": item.Name });
+                                }
+                            })
+                            console.log(arrBooks)
+                            response(arrBooks);
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(textStatus);
+                        }
+                    });
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    console.log(ui.item.value);
+                    getDevicefromName(ui.item.value);
+                }
+
+            });
+
+            $("#content").autocomplete({
+                source: function (request, response) {
+                    console.log('here');
+                    console.log(request);
+                    if ()
                     $.ajax({
                         url: "https://contentuatapiserver1.azurewebsites.net/devices?name=" + request.term,
                         dataType: "json",
@@ -328,6 +371,12 @@
         </div>
         <div class="col-sm-4">
             <h2>Content</h2>
+            <div id="selectedDevice"></div>
+            <form style="padding: 20px;">
+                <label for="device">Content Search:</label><br>
+                <input type="text" id="content" name="content" placeholder="Search Your Content"><br>
+                <br />
+            </form>
             <div id="content"></div>
         </div>
     </div>
