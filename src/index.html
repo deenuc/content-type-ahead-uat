@@ -135,6 +135,9 @@
         }
         function getGuides(selectedDevice) {
             $("#edifyContent").html('Fetching Content...');
+            $("#searchedContent").html('');
+            $("#content").val("")
+
             console.log(selectedDevice.Model);
             console.log("https://contentuatapiserver1.azurewebsites.net/guides?guidetype=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&operatingsystem=' + $("#eOS1").val());
             $.ajax({
@@ -422,6 +425,7 @@
                             <input type="text" id="year" name="year" placeholder="year"><br>
                         </div>
                     </div>
+                    <!--
                     <div class="col-sm-6"><label class="page1">Knowledge Type</label>
                         <div class="tooltips" title="Please select the Knowledge Type">
                             <select id="knowledgeType" name="knowledgeType" placeholder="Select knowledge Type">
@@ -433,6 +437,7 @@
 
                         </div>
                     </div>
+                    -->
 
                 </div>
                 <br />
