@@ -16,7 +16,9 @@
 
     <script>
         var globalDevices = [];
+        var searchedContents = [];
         var selectedItem;
+        var selectedContent;
         $(document).ready(function () {
             BindControls();
             $("#search").click(function () {
@@ -50,6 +52,37 @@
                 $("#year").val("");
             });
         });
+        function getContentfromId(id) {
+            console.log(id);
+            var item = searchedContents.find(item => item.Id === id);
+            selectedContent = item;
+            console.log(item)
+            var searchedContentHtml = '';
+            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+            searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
+            searchedContentHtml = searchedContentHtml + '<div class="card-body">';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
+            searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+            searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
+
+            $("#searchedContent").html(searchedContentHtml);
+
+        }
+        function getContentfromName(title) {
+            var item = searchedContents.find(item => item.Title === title);
+            selectedContent = item;
+            console.log(item)
+            var searchedContentHtml = '';
+            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+            searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
+            searchedContentHtml = searchedContentHtml + '<div class="card-body">';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
+            searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+            searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
+
+            $("#searchedContent").html(searchedContentHtml);
+
+        }
         function getDevicefromId(id) {
             console.log(id);
             var item = globalDevices.find(item => item.Id === id);
@@ -154,19 +187,24 @@
                 source: function (request, response) {
                     console.log('here');
                     console.log(request);
+                    var eOS = $('#eOS').val()
                     if (selectedItem) {
+                        var model = selectedItem.Model
+                        var brand = selectedItem.Brand
                         $.ajax({
-                            url: "https://contentuatapiserver1.azurewebsites.net/devices?name=" + request.term,
+                            url: "https://contentuatapiserver1.azurewebsites.net/content?brand=" + brand + '&model=' + model + '&operatingsystem=' + eOS + '&searchText=' + request.term,
                             dataType: "json",
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
                             success: function (data) {
                                 console.log(data);
-                                globalDevices = data.devices;
+                                searchedContents = data.knowledge;
                                 var arrBooks = [];
-                                $.map(data.devices, function (item) {
-                                    if (!arrBooks.find(item1 => item1.value === item.Name)) {
-                                        arrBooks.push({ "value": item.Name, "label": item.Name });
+                                $.map(data.knowledge, function (item) {
+                                    if (!arrBooks.find(item1 => item1.value === item.Id)) {
+                                        //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
+                                        arrBooks.push({ "value": item.Title, "label": item.Title });
+
                                     }
                                 })
                                 console.log(arrBooks)
@@ -182,7 +220,8 @@
                 minLength: 3,
                 select: function (event, ui) {
                     console.log(ui.item.value);
-                    getDevicefromName(ui.item.value);
+                    //getContentfromId(ui.item.value);
+                    getContentfromName(ui.item.value);
                 }
 
             });
@@ -221,7 +260,7 @@
 
 <body>
     <div class="row">
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <form style="padding: 20px;">
                 <label for="device">Device Name:</label><br>
                 <input type="text" id="device" name="device" placeholder="Search Your Device"><br>
@@ -366,19 +405,32 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-4">
-            <h2>Knowledge</h2>
+        <div class="col-sm-3">
+            <h2>Linked Content</h2>
             <div id="knowledge"></div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
+            <h2>Edify Content</h2>
+            <div id="edifyContent"></div>
+        </div>
+
+        <div class="col-sm-3">
             <h2>Content</h2>
             <div id="selectedDevice"></div>
-            <form style="padding: 20px;">
-                <label for="device">Content Search:</label><br>
-                <input type="text" id="content" name="content" placeholder="Search Your Content"><br>
-                <br />
-            </form>
-            <div id="content"></div>
+            <label class="page1">Operating System</label>
+            <select id="eOS" name="eOS" placeholder="Select OS">
+                <option value='iOS'>iOS</option>
+                <option value='Android'>Android</option>
+                <option value='N/A'>N/A</option>
+            </select>
+            <br />
+
+            <label for="content">Content Search:</label><br>
+            <input type="text" id="content" name="content" placeholder="Search Your Content">
+
+            <br><br />
+            <div id="searchedContent"></div>
+
         </div>
     </div>
 </body>
