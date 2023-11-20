@@ -89,22 +89,19 @@
             selectedItem = item;
             var deviceHtml = 'Brand : <b> ' + item.Brand + ' </b> Model : <b> ' + item.Model + ' </b>'
             $("#selectedDevice").html(deviceHtml);
+            $("#selectedDevice1").html(deviceHtml);
             console.log(item)
             getKnowledge(item)
+            getGuides(item)
 
         }
         function getKnowledge(selectedDevice) {
             $("#knowledge").html('Fetching Content...');
             console.log(selectedDevice.Model);
-            console.log("https://contentuatapiserver1.azurewebsites.net/knowledge?knowledgeType=" + $("#knowledgeType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand);
+            console.log("https://contentuatapiserver1.azurewebsites.net/knowledge?knowledgeType=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand);
             $.ajax({
-                url: "https://contentuatapiserver1.azurewebsites.net/knowledge?knowledgeType=" + $("#knowledgeType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand,
+                url: "https://contentuatapiserver1.azurewebsites.net/knowledge?knowledgeType=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand,
                 type: "GET",
-                headers: {
-                    'client_id': '15991d460ac54a4cb4e23185c5ecd38a',
-                    'client_secret': '0821E8e7599b4E7AAD3523B1fe7f8F3f',
-                    "Access-Control-Allow-Origin": "*"
-                },
                 success: function (data, status) {
                     if (!data) {
                         $("#knowledge").html('No Content Found for ' + selectedDevice.Model);
@@ -136,14 +133,55 @@
             });
 
         }
+        function getGuides(selectedDevice) {
+            $("#edifyContent").html('Fetching Content...');
+            console.log(selectedDevice.Model);
+            console.log("https://contentuatapiserver1.azurewebsites.net/guides?guidetype=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&operatingsystem=' + $("#eOS1").val());
+            $.ajax({
+                url: "https://contentuatapiserver1.azurewebsites.net/guides?guidetype=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&operatingsystem=' + $("#eOS1").val(),
+                type: "GET",
+                success: function (data, status) {
+                    if (!data) {
+                        $("#edifyContent").html('No Content Found for ' + selectedDevice.Model);
+                    }
+                    console.log(data);
+                    if (data.guides) {
+                        var records = data.guides;
+                        var guidesHTML = '';
+                        for (let i = 0; i < records.length; i++) {
+                            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+                            guidesHTML = guidesHTML + '<div class="card" style="width: 18rem;">';
+                            guidesHTML = guidesHTML + '<div class="card-body">';
+                            guidesHTML = guidesHTML + '<h5 class="card-title">' + records[i].Name + '</h5>';
+                            guidesHTML = guidesHTML + ' <p class="card-text"> Operating System : ' + records[i].OperatingSystem + '</p>';
+                            guidesHTML = guidesHTML + ' <a href="' + records[i].URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+                            guidesHTML = guidesHTML + '</div>  </div> <br/>';
+                        }
+                        $("#edifyContent").html(guidesHTML);
+                    }
+                    else {
+                        $("#edifyContent").html(data.guides.message);
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error" + error + status)
+                },
+            });
+
+        }
+
         function getDevicefromName(name) {
             console.log(name);
             var item = globalDevices.find(item => item.Name === name);
             selectedItem = item;
             var deviceHtml = 'Brand : <b> ' + item.Brand + ' </b> Model : <b> ' + item.Model + ' </b>'
             $("#selectedDevice").html(deviceHtml);
+            $("#selectedDevice1").html(deviceHtml);
             console.log(item)
             getKnowledge(item)
+            getGuides(item)
         }
         function BindControls() {
 
@@ -407,15 +445,35 @@
         </div>
         <div class="col-sm-3">
             <h2>Linked Content</h2>
+            <div class="tooltips" title="Please select the Knowledge Type">
+                <select id="knowledgeType1" name="knowledgeType1" placeholder="Select knowledge Type">
+                    <option value='OEM'>OEM</option>
+                    <option value='Lifestyle'>Lifestyle</option>
+                    <option value='Video'>Video</option>
+                    <option value='Device Feature'>Device Feature</option>
+                </select>
+            </div>
             <div id="knowledge"></div>
         </div>
         <div class="col-sm-3">
             <h2>Edify Content</h2>
+            <div id="selectedDevice1"></div>
+            <label class="page1">Operating System</label>
+            <select id="eOS1" name="eOS1" placeholder="Select OS">
+                <option value='iOS'>iOS</option>
+                <option value='Android'>Android</option>
+                <option value='N/A'>N/A</option>
+            </select>
+            <label class="page1">Guide Type</label>
+            <select id="guideType" name="guideType" placeholder="Select OS">
+                <option value='How-to'>How-To</option>
+                <option value='Troubleshooting'>Troubleshooting</option>
+            </select>
             <div id="edifyContent"></div>
         </div>
 
         <div class="col-sm-3">
-            <h2>Content</h2>
+            <h2>Content Search</h2>
             <div id="selectedDevice"></div>
             <label class="page1">Operating System</label>
             <select id="eOS" name="eOS" placeholder="Select OS">
