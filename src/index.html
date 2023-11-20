@@ -292,6 +292,16 @@
                 }).join('');
                 $deviceType.html(html)
             });
+            $('#guideType').change(function () {
+                getGuides(selectedItem)
+            });
+            $('#eOS1').change(function () {
+                getGuides(selectedItem)
+            });
+            $('#knowledgeType1').change(function () {
+                getKnowledge(selectedItem)
+            });
+
         });
     </script>
 </head>
