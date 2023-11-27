@@ -62,6 +62,7 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';
             searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
             searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
 
@@ -77,6 +78,7 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';
             searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
             searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
 
@@ -157,6 +159,7 @@
                             guidesHTML = guidesHTML + '<div class="card-body">';
                             guidesHTML = guidesHTML + '<h5 class="card-title">' + records[i].Name + '</h5>';
                             guidesHTML = guidesHTML + ' <p class="card-text"> Operating System : ' + records[i].OperatingSystem + '</p>';
+                            guidesHTML = guidesHTML + '<h5 class="card-title">' + records[i].ContentCategory +   '</h5>';
                             guidesHTML = guidesHTML + ' <a href="' + records[i].URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
                             guidesHTML = guidesHTML + '</div>  </div> <br/>';
                         }
@@ -217,6 +220,7 @@
                     });
                 },
                 minLength: 3,
+                items:10,
                 select: function (event, ui) {
                     console.log(ui.item.value);
                     getDevicefromName(ui.item.value);
