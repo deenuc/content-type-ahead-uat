@@ -62,7 +62,7 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
-            if (LinkType == 'Edify'){
+            if (item.LinkType == 'Edify'){
                 searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';    
             }else{
                 searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' +   item.ContentType + ' : ' + item.Category +   '</h5>';
@@ -82,7 +82,7 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
-            if (LinkType == 'Edify'){
+            if (item.LinkType == 'Edify'){
                 searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';    
             }else{
                 searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' +   item.ContentType + ' : ' + item.Category +   '</h5>';
