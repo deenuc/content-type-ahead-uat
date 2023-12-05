@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html>
-
+<style>
+    .highlight { background-color: red;  max-width:1500px; }
+</style>
 <head>
     <title> Content Portal</title>
 
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.min.css'
         media="screen" />
     <link rel="Stylesheet" href="https://twitter.github.io/typeahead.js/css/examples.css" />
@@ -199,10 +201,17 @@
             getKnowledge(item)
             getGuides(item)
         }
+
+        function _resizeMenu() {
+            console.log('resizing')
+            this.menu.element.outerWidth( 900 );
+        }
+
         function BindControls() {
-
-
             $("#device").autocomplete({
+                classes: {
+                    "ui-autocomplete": "highlight",
+                  },
                 source: function (request, response) {
                     console.log('here');
                     console.log(request);
@@ -229,8 +238,20 @@
                         }
                     });
                 },
+                _resizeMenu: function () {
+                    console.log('resizing');
+                    this.menu.element.outerWidth(900);
+                },
+                _renderMenu: function (ul, items) {
+                    console.log('rendering');
+                    var that = this;
+                    $.each(items, function (index, item) {
+                        that._renderItemData(ul, item);
+                    });
+                    $(ul).find("li").odd().addClass("odd");
+                },
                 minLength: 3,
-                items:10,
+                items: 10,
                 select: function (event, ui) {
                     console.log(ui.item.value);
                     getDevicefromName(ui.item.value);
@@ -253,6 +274,9 @@
                             contentType: "application/json; charset=utf-8",
                             success: function (data) {
                                 console.log(data);
+                                data.knowledge.forEach((item) => {
+                                    item.Title  = item.LinkType + " : " + item.ContentType + " : " + item.Title  
+                                });
                                 searchedContents = data.knowledge;
                                 var arrBooks = [];
                                 $.map(data.knowledge, function (item) {
@@ -479,7 +503,8 @@
                     <option value='OEM'>OEM</option>
                     <option value='Lifestyle'>Lifestyle</option>
                     <option value='Video'>Video</option>
-                    <option value='Device Feature'>Device Feature</option>
+                    <option value='How-to'>How-To</option>
+                    <option value='Troubleshooting'>Troubleshooting</option>
                 </select>
             </div>
             <div id="knowledge"></div>
