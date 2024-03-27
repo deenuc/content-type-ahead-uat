@@ -264,24 +264,31 @@
                     console.log('here');
                     console.log(request);
                     var eOS = $('#eOS').val()
+                    var client = $('#client').val()
+                    var language = $('#language').val()
                     if (selectedItem) {
                         var model = selectedItem.Model
                         var brand = selectedItem.Brand
+                        console.log("https://contentuatapiserver1.azurewebsites.net/content?brand=" + brand + '&model=' + model + '&operatingsystem=' + eOS + '&client=' + client + '&language=' + language + '&searchText=' + request.term)
                         $.ajax({
-                            url: "https://contentuatapiserver1.azurewebsites.net/content?brand=" + brand + '&model=' + model + '&operatingsystem=' + eOS + '&searchText=' + request.term,
+                            url: "https://contentuatapiserver1.azurewebsites.net/content?brand=" + brand + '&model=' + model + '&operatingsystem=' + eOS + '&client=' + client + '&language=' + language + '&searchText=' + request.term,
                             dataType: "json",
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
                             success: function (data) {
                                 console.log(data);
-                                data.knowledge.forEach((item) => {
-                                    item.Title  = item.LinkType + " : " + item.ContentType + " : " + item.Title  
-                                });
-                                searchedContents = data.knowledge;
+                                if (data.knowledge.length > 0) {
+                                    data.knowledge.forEach((item) => {
+                                        item.Title = item.LinkType + " : " + item.ContentType + " : " + item.Title
+                                    });
+                                    searchedContents = data.knowledge;
+                                } else {
+                                    searchedContents = 'No Data Found'     
+                                }
                                 var arrBooks = [];
                                 $.map(data.knowledge, function (item) {
                                     if (!arrBooks.find(item1 => item1.value === item.Id)) {
-                                        //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
+                            //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
                                         arrBooks.push({ "value": item.Title, "label": item.Title });
 
                                     }
@@ -536,7 +543,16 @@
                 <option value='N/A'>N/A</option>
             </select>
             <br />
-
+            <label class="page1">Client</label>
+            <select id="client" name="client" placeholder="Select Client">
+                <option value='T-Mobile PHD'>T-Mobile PHD</option>
+                <option value='Bluegrass PTP'>Bluegrass PTP</option>
+            </select>
+            <select id="language" name="language" placeholder="Select Language">
+                <option value='en'>English</option>
+                <option value='es'>Spanish</option>
+            </select>
+            <br />
             <label for="content">Content Search:</label><br>
             <input type="text" id="content" name="content" placeholder="Search Your Content">
 
