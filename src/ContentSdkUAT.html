@@ -26,7 +26,7 @@
             $("#search").click(function () {
                 console.log('Clicked');
                 $.ajax({
-                    url: 'http://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
+                    url: 'https://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
                         + '&operatingSystem=' + $('#operatingSystem').val() + '&worksWith=' + $('#worksWith').val()
                         + '&year=' + $('#year').val(),
                     type: "GET",
@@ -110,9 +110,9 @@
         function getKnowledge(selectedDevice) {
             $("#knowledge").html('Fetching Content...');
             console.log(selectedDevice.Model);
-            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand);
+            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand);
             $.ajax({
-                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand,
+                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand,
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -159,9 +159,9 @@
             $("#content").val("")
 
             console.log(selectedDevice.Model);
-            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val());
+            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val());
             $.ajax({
-                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val(),
+                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val(),
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -224,7 +224,7 @@
                     console.log('here');
                     console.log(request);
                     $.ajax({
-                        url: "http://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term,
+                        url: "https://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term,
                         dataType: "json",
                         type: "GET",
                         contentType: "application/json; charset=utf-8",
@@ -277,9 +277,9 @@
                     if (selectedItem) {
                         var model = selectedItem.model
                         var brand = selectedItem.brand
-                        console.log("http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term)
+                        console.log("https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term)
                         $.ajax({
-                            url: "http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS  + '&name=' + request.term,
+                            url: "https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS  + '&name=' + request.term,
                             dataType: "json",
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
