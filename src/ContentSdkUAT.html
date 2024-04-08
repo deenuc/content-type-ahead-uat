@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<style>
+    .highlight { background-color: red;  max-width:1500px; }
+</style>
+<head>
+    <title> Content Portal</title>
+
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href='https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.0.3/css/bootstrap.min.css'
+        media="screen" />
+    <link rel="Stylesheet" href="https://twitter.github.io/typeahead.js/css/examples.css" />
+    <link rel="stylesheet" href="/resources/demos/style.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.js"></script>
+    <script src="https://cdn.rawgit.com/bassjobsen/Bootstrap-3-Typeahead/master/bootstrap3-typeahead.min.js"></script>
+
+
+    <script>
+        var globalDevices = [];
+        var searchedContents = [];
+        var selectedItem;
+        var selectedContent;
+        $(document).ready(function () {
+            BindControls();
+            $("#search").click(function () {
+                console.log('Clicked');
+                $.ajax({
+                    url: 'http://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
+                        + '&operatingSystem=' + $('#operatingSystem').val() + '&worksWith=' + $('#worksWith').val()
+                        + '&year=' + $('#year').val(),
+                    type: "GET",
+                    success: function (data, status) {
+                        console.log(data);
+                        globalDevices = data.devices;
+                        var deviceHtml = '';
+                        for (let i = 0; i < globalDevices.length; i++) {
+                            deviceHtml = deviceHtml + '<a href="#" onclick="getDevicefromId(\'' + globalDevices[i].Id + '\'); return false;" class="list-group-item">' + globalDevices[i].Name + "</a>";
+                        }
+                        $("#devices").html(deviceHtml);
+
+                    },
+                    error: function (xhr, status, error) {
+                        console.log("Error" + error + status)
+                    },
+                });
+            });
+            $("#clear").click(function () {
+                console.log('clearing');
+                $("#deviceCategory").val("");
+                $("#deviceType").val("");
+                $("#operatingSystem").val("");
+                $("#worksWith").val("");
+                $("#year").val("");
+            });
+        });
+        function getContentfromId(id) {
+            console.log(id);
+            var item = searchedContents.find(item => item.Id === id);
+            selectedContent = item;
+            console.log(item)
+            var searchedContentHtml = '';
+            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+            searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
+            searchedContentHtml = searchedContentHtml + '<div class="card-body">';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
+            if (item.LinkType == 'Edify'){
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';    
+            }else{
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' +   item.ContentType + ' : ' + item.Category +   '</h5>';
+            }
+            searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+            searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
+
+            $("#searchedContent").html(searchedContentHtml);
+
+        }
+        function getContentfromName(title) {
+            var item = searchedContents.find(item => item.title === title);
+            selectedContent = item;
+            console.log(item)
+            var searchedContentHtml = '';
+            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+            searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
+            searchedContentHtml = searchedContentHtml + '<div class="card-body">';
+            searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.title + '</h5>';
+            if (item.LinkType == 'Edify'){
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory +   '</h5>';    
+            }else{
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory +   '</h5>';
+            }
+            searchedContentHtml = searchedContentHtml + ' <a href="' + item.url + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+            searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
+
+            $("#searchedContent").html(searchedContentHtml);
+
+        }
+        function getDevicefromId(id) {
+            console.log(id);
+            var item = globalDevices.find(item => item.Id === id);
+            selectedItem = item;
+            var deviceHtml = 'Brand : <b> ' + item.Brand + ' </b> Model : <b> ' + item.Model + ' </b>'
+            $("#selectedDevice").html(deviceHtml);
+            $("#selectedDevice1").html(deviceHtml);
+            console.log(item)
+            getKnowledge(item)
+            getGuides(item)
+
+        }
+        function getKnowledge(selectedDevice) {
+            $("#knowledge").html('Fetching Content...');
+            console.log(selectedDevice.Model);
+            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand);
+            $.ajax({
+                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand,
+                type: "GET",
+                success: function (data, status) {
+                    if (!data) {
+                        $("#knowledge").html('No Content Found for ' + selectedDevice.model);
+                    }
+                    console.log(data);
+                    if (data.searchResults) {
+                        var records = data.searchResults;
+                        var knowledgeHtml = '';
+                        for (let i = 0; i < records.length; i++) {
+
+                            if(records[i].type == 'AssurantHowToContentItem' || records[i].type == 'AssurantTroubleshootingContentItem') {
+                                continue;
+                            }
+                            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+                            knowledgeHtml = knowledgeHtml + '<div class="card" style="width: 18rem;">';
+                            knowledgeHtml = knowledgeHtml + '<div class="card-body">';
+                            knowledgeHtml = knowledgeHtml + '<h5 class="card-title">' + records[i].title + '</h5>';
+                            //knowledgeHtml = knowledgeHtml + ' <p class="card-text"> Language : ' + records[i].type + '  Link Type : ' + records[i].subCategory + '</p>';
+                            knowledgeHtml = knowledgeHtml + ' <p class="card-text"> Sub Category : ' + records[i].subCategory + '</p>';
+                            knowledgeHtml = knowledgeHtml + ' <a href="' + records[i].url + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+                            knowledgeHtml = knowledgeHtml + '</div>  </div> <br/>';
+                        }   
+                        if(knowledgeHtml == '') {
+                            knowledgeHtml = 'No Records Found';
+                        }
+                        $("#knowledge").html(knowledgeHtml);
+                    }
+                    else {
+                        $("#knowledge").html('No Records Found');
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error" + error + status)
+                },
+            });
+
+        }
+        function getGuides(selectedDevice) {
+            $("#edifyContent").html('Fetching Content...');
+            $("#searchedContent").html('');
+            $("#content").val("")
+
+            console.log(selectedDevice.Model);
+            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val());
+            $.ajax({
+                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val(),
+                type: "GET",
+                success: function (data, status) {
+                    if (!data) {
+                        $("#edifyContent").html('No Content Found for ' + selectedDevice.model);
+                    }
+                    console.log(data);
+                    if (data.searchResults) {
+                        var records = data.searchResults;
+                        var guidesHTML = '';
+                        for (let i = 0; i < records.length; i++) {
+                            // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
+                            guidesHTML = guidesHTML + '<div class="card" style="width: 18rem;">';
+                            guidesHTML = guidesHTML + '<div class="card-body">';
+                            guidesHTML = guidesHTML + '<h5 class="card-title">' + records[i].title + '</h5>';
+                            guidesHTML = guidesHTML + ' <p class="card-text"> Operating System : ' + $("#eOS1").val() + '</p>';
+                            if (records[i].subCategory) {
+                                guidesHTML = guidesHTML + '<h5 class="card-title">' + records[i].subCategory + '</h5>';
+                            }
+                            guidesHTML = guidesHTML + ' <a href="' + records[i].url + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
+                            guidesHTML = guidesHTML + '</div>  </div> <br/>';
+                        }
+                        $("#edifyContent").html(guidesHTML);
+                    }
+                    else {
+                        $("#edifyContent").html('No Records Found');
+                    }
+
+
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error" + error + status)
+                },
+            });
+
+        }
+
+        function getDevicefromName(name) {
+            console.log(name);
+            var item = globalDevices.find(item => item.model === name);
+            selectedItem = item;
+            var deviceHtml = 'Brand : <b> ' + item.brand + ' </b> Model : <b> ' + item.model + ' </b>'
+            $("#selectedDevice").html(deviceHtml);
+            $("#selectedDevice1").html(deviceHtml);
+            console.log(item)
+            //getKnowledge(item)
+            //getGuides(item)
+        }
+
+        function _resizeMenu() {
+            console.log('resizing')
+            this.menu.element.outerWidth( 900 );
+        }
+
+        function BindControls() {
+            $("#device").autocomplete({
+                classes: {
+                    "ui-autocomplete": "highlight",
+                  },
+                source: function (request, response) {
+                    console.log('here');
+                    console.log(request);
+                    $.ajax({
+                        url: "http://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term,
+                        dataType: "json",
+                        type: "GET",
+                        contentType: "application/json; charset=utf-8",
+                        success: function (data) {
+                            console.log(data.deviceMetadata);
+                            globalDevices = data.deviceMetadata;
+                            var arrBooks = [];
+                            $.map(data.deviceMetadata, function (item) {
+                                
+                                    arrBooks.push({ "value": item.model, "label": item.displayName });
+                                
+                            })
+                            console.log(arrBooks)
+                            response(arrBooks);
+
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(textStatus);
+                        }
+                    });
+                },
+                _resizeMenu: function () {
+                    console.log('resizing');
+                    this.menu.element.outerWidth(900);
+                },
+                _renderMenu: function (ul, items) {
+                    console.log('rendering');
+                    var that = this;
+                    $.each(items, function (index, item) {
+                        that._renderItemData(ul, item);
+                    });
+                    $(ul).find("li").odd().addClass("odd");
+                },
+                minLength: 3,
+                items: 10,
+                select: function (event, ui) {
+                    console.log(ui.item.value);
+                    getDevicefromName(ui.item.value);
+                }
+
+            });
+
+            $("#content").autocomplete({
+                source: function (request, response) {
+                    console.log('here');
+                    console.log(request);
+                    var eOS = $('#eOS').val()
+                    var client = $('#client').val()
+                    var language = $('#language').val()
+                    if (selectedItem) {
+                        var model = selectedItem.model
+                        var brand = selectedItem.brand
+                        console.log("http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term)
+                        $.ajax({
+                            url: "http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS  + '&name=' + request.term,
+                            dataType: "json",
+                            type: "GET",
+                            contentType: "application/json; charset=utf-8",
+                            success: function (data) {
+                                console.log(data);
+                                if (data.searchResults.length > 0) {
+                                    data.searchResults.forEach((item) => {
+                                        item.title = item.type + " : " + item.title 
+                                    });
+                                    searchedContents = data.searchResults;
+                                } else {
+                                    searchedContents = 'No Data Found'     
+                                }
+                                var arrBooks = [];
+                                $.map(data.searchResults, function (item) {
+                                    if (!arrBooks.find(item1 => item1.value === item.title)) {
+                            //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
+                                        arrBooks.push({ "value": item.title, "label": item.title });
+
+                                    }
+                                })
+                                console.log(arrBooks)
+                                response(arrBooks);
+
+                            },
+                            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                                alert(textStatus);
+                            }
+                        });
+                    }
+                },
+                minLength: 3,
+                select: function (event, ui) {
+                    console.log(ui.item.value);
+                    //getContentfromId(ui.item.value);
+                    getContentfromName(ui.item.value);
+                }
+
+            });
+        }
+
+        jQuery(function ($) {
+            var deviceTypes = {
+                'Appliances': ['', 'Refrigerator', 'Dryers', 'Washers', 'Washer & Dryer Combo', 'Ranges', 'Cooktops', 'Wall Ovens', 'Dishwashers', 'Microwaves', 'Robotic Vacuums', 'Small Appliances'],
+                'Cameras': ['', 'Camera', 'Camcorders', 'Drones'],
+                'Car Electronics': ['', 'Car Stereo Receivers', 'GPS Navigation', 'Car Security', 'Back-Up & Dash Cameras', 'Car Video & Media Players'],
+                'Home Fitness': ['', 'Exercise Equipment', 'Smart Scale'],
+                'Home Theater': ['', 'Home Theater System', 'Sound Bars', 'Blu-ray Players', 'Projectors', 'Streaming Media Players'],
+                'Phones': ['', 'Smartphone'],
+                'Printers': ['', 'Printers'],
+                'Smart Home': ['', 'Bluetooth Speakers', 'Smart Speakers', 'Smart Displays', 'Smart Lighting', 'Smart Plugs & Outlets', 'Smart Thermostats', 'Smart Sprinkler', 'Home Security', 'Bluetooth Trackers'],
+                'Tablets': ['', 'Tablets'],
+                'TV': ['', 'Smart TV'],
+                'Video Games': ['', 'Console ', 'Video Game Accessories'],
+                'Wearable Tech': ['', 'Smartwatches', 'Virtual Reality', 'Heartrate Monitor', 'Sunglasses', 'Headphones'],
+                'Wi-Fi & Networking': ['', 'Routers', 'Modems & Gateways', 'Network Extenders', 'USB Wi-Fi Adapters'],
+                'Computers': ['', 'Laptop', 'Desktop', 'Monitors', 'Storage', 'Computer Accessories']
+            }
+
+            var $deviceType = $('#deviceType');
+            $('#deviceCategory').change(function () {
+                var deviceCategory = $(this).val(), lcns = deviceTypes[deviceCategory] || [];
+
+                var html = $.map(lcns, function (lcn) {
+                    return '<option value="' + lcn + '">' + lcn + '</option>'
+                }).join('');
+                $deviceType.html(html)
+            });
+            $('#guideType').change(function () {
+                getGuides(selectedItem)
+            });
+            $('#eOS1').change(function () {
+                getGuides(selectedItem)
+            });
+            $('#knowledgeType1').change(function () {
+                getKnowledge(selectedItem)
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+    <div class="row">
+        <div class="col-sm-3">
+            <form style="padding: 20px;">
+                <label for="device">Device Name:</label><br>
+                <input type="text" id="device" name="device" placeholder="Search Your Device"><br>
+                <br />
+
+
+
+                <div class="row">
+                    <div class="col-sm-6">
+                       <!-- <label class="page1">Device Category</label>
+                        <div class="tooltips" title="Please select the Device Category">
+                            <select id="deviceCategory" name="deviceCategory" placeholder="Select Device Category">
+                                <option value=''>Select Device Category</option>
+                                <option value='Appliances'>Appliances</option>
+                                <option value='Cameras'>Cameras</option>
+                                <option value='Car Electronics'>Car Electronics</option>
+                                <option value='Computers'>Computers</option>
+                                <option value='Home Fitness'>Home Fitness</option>
+                                <option value='Home Theater'>Home Theater</option>
+                                <option value='Phones'>Phones</option>
+                                <option value='Printers'>Printers</option>
+                                <option value='Smart Home'>Smart Home</option>
+                                <option value='Tablets'>Tablets</option>
+                                <option value='TV'>TV</option>
+                                <option value='Video Games'>Video Games</option>
+                                <option value='Wearable Tech'>Wearable Tech</option>
+                                <option value='Wi-Fi & Networking'>Wi-Fi & Networking</option>
+                            </select>
+
+                        </div>-->
+                    </div>
+
+                   <!-- <div class="col-sm-6"><label class="page1">Device Type</label>
+                        <div class="tooltips" title="Please select the Device Type">
+                            <select id="deviceType" name="deviceType" placeholder="Device Type "></select>
+                        </div>
+                    </div>-->
+
+                </div>
+                <div class="row">
+                    <!--<div class="col-sm-6">
+                        <label class="page1">Operating System</label>
+                        <div class="tooltips" title="Please select the Operating System">
+                            <select id="operatingSystem" name="operatingSystem" placeholder="Select Operating System">
+                                <option value=''>Select Operating System</option>
+                                <option value='Android'>Android</option>
+                                <option value='Android TV'>Android TV</option>
+                                <option value='Chrome OS'>Chrome OS</option>
+                                <option value='Fire OS'>Fire OS</option>
+                                <option value='Fitbit OS'>Fitbit OS</option>
+                                <option value='Garmin OS'>Garmin OS</option>
+                                <option value='Google TV'>Google TV</option>
+                                <option value='Huawei Lite'>Huawei Lite</option>
+                                <option value='iOS'>iOS</option>
+                                <option value='iPadOS'>iPadOS</option>
+                                <option value='Linux'>Linux</option>
+                                <option value='MacOS'>MacOS</option>
+                                <option value='Polar OS'>Polar OS</option>
+                                <option value='Roku OS'>Roku OS</option>
+                                <option value='SmartCast'>SmartCast</option>
+                                <option value='Suunto OS'>Suunto OS</option>
+                                <option value='Tizen'>Tizen</option>
+                                <option value='tvOS'>tvOS</option>
+                                <option value='watchOS'>watchOS</option>
+                                <option value='WearOS'>WearOS</option>
+                                <option value='webOS'>webOS</option>
+                                <option value='Windows'>Windows</option>
+                            </select>
+
+                        </div>
+                    </div>-->
+
+                    <!--<div class="col-sm-6"><label class="page1">Works With</label>
+                        <div class="tooltips" title="Please select the Works With">
+                            <select id="worksWith" name="worksWith" placeholder="Select Works With">
+                                <option value=''>Select Works With</option>
+                                <option value='Amazon Alexa'>Amazon Alexa</option>
+                                <option value='Google Assistant'>Google Assistant</option>
+                                <option value='Apple HomeKit'>Apple HomeKit</option>
+                                <option value='IFTTT'>IFTTT</option>
+                                <option value='Samsung SmartThings'>Samsung SmartThings</option>
+                                <option value='Zigbee'>Zigbee</option>
+                                <option value='Zwave'>Zwave</option>
+                                <option value='Nest'>Nest</option>
+                                <option value='Wink'>Wink</option>
+                                <option value='Philips Hue'>Philips Hue</option>
+                                <option value='Microsoft Cortana'>Microsoft Cortana</option>
+                                <option value='Stratis'>Stratis</option>
+                                <option value='Bonomi'>Bonomi</option>
+                                <option value='IRIS'>IRIS</option>
+                                <option value='Hubitat'>Hubitat</option>
+                                <option value='Ring'>Ring</option>
+                                <option value='LIFX'>LIFX</option>
+                                <option value='TP-Link'>TP-Link</option>
+                                <option value='PEQ'>PEQ</option>
+                                <option value='Logitech Harmony Home Hub'>Logitech Harmony Home Hub</option>
+                                <option value='HomeSeer'>HomeSeer</option>
+                                <option value='Vera'>Vera</option>
+                                <option value='Apple Find My'>Apple Find My</option>
+                                <option value='HubSpace'>HubSpace</option>
+                            </select>
+
+                        </div>
+                    </div>-->
+
+                </div>
+                <div class="row">
+                    <!--<div class="col-sm-6">
+                        <label class="page1">Year</label>
+                        <div class="tooltips" title="Please select Year">
+                            <input type="text" id="year" name="year" placeholder="year"><br>
+                        </div>
+                    </div>-->
+                    <!--
+                    <div class="col-sm-6"><label class="page1">Knowledge Type</label>
+                        <div class="tooltips" title="Please select the Knowledge Type">
+                            <select id="knowledgeType" name="knowledgeType" placeholder="Select knowledge Type">
+                                <option value='OEM'>OEM</option>
+                                <option value='Lifestyle'>Lifestyle</option>
+                                <option value='Video'>Video</option>
+                                <option value='Device Feature'>Device Feature</option>
+                            </select>
+
+                        </div>
+                    </div>
+                    -->
+
+                </div>
+                <br />
+                <br />
+               <!-- <div class="row">
+                    <div class="col-sm-6">
+                        <input type="button" value="Search" id="search">
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="button" value="Clear" id="clear">
+                    </div>
+                </div>-->
+            </form>
+            <div class="row">
+                <div class="col-sm-8">
+                    <div class="list-group" id="devices">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <h2>Linked Content</h2>
+            <div class="tooltips" title="Please select the Knowledge Type">
+                <select id="knowledgeType1" name="knowledgeType1" placeholder="Select knowledge Type">
+                    <option value='manual'>OEM</option>
+                    <option value='lifestyle'>Lifestyle</option>
+                    <option value='video'>Video</option>
+                    <option value='howto'>How-To</option>
+                    <option value='troubleshooting'>Troubleshooting</option>
+                </select>
+            </div>
+            <div id="knowledge"></div>
+        </div>
+        <div class="col-sm-3">
+            <h2>Edify Content</h2>
+            <div id="selectedDevice1"></div>
+            <label class="page1">Operating System</label>
+            <select id="eOS1" name="eOS1" placeholder="Select OS">
+                <option value='IOS'>iOS</option>
+                <option value='ANDRIOD'>Android</option>
+                <option value='N/A'>N/A</option>
+            </select>
+            <label class="page1">Guide Type</label>
+            <select id="guideType" name="guideType" placeholder="Select OS">
+                <option value='howto'>How-To</option>
+                <option value='troubleshooting'>Troubleshooting</option>
+            </select>
+            <div id="edifyContent"></div>
+        </div>
+
+        <div class="col-sm-3">
+            <h2>Content Search</h2>
+            <div id="selectedDevice"></div>
+            <label class="page1">Operating System</label>
+            <select id="eOS" name="eOS" placeholder="Select OS">
+                <option value='IOS'>iOS</option>
+                <option value='ANDRIOD'>Android</option>
+                <option value='N/A'>N/A</option>
+            </select>
+            <br />
+            <label class="page1">Client</label>
+            <!--<select id="client" name="client" placeholder="Select Client">
+                <option value='T-Mobile PHD'>T-Mobile PHD  - Edify</option>
+                <option value='Bluegrass PTP'>Bluegrass PTP  - Linked Only</option>
+            </select>-->
+            <select id="language" name="language" placeholder="Select Language">
+                <option value='en'>English</option>
+                <option value='es'>Spanish</option>
+            </select>
+            <br />
+            <label for="content">Content Search:</label><br>
+            <input type="text" id="content" name="content" placeholder="Search Your Content">
+
+            <br><br />
+            <div id="searchedContent"></div>
+
+        </div>
+    </div>
+</body>
+
+</html>
