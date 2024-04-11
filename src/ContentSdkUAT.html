@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <style>
-    .highlight { background-color: red;  max-width:1500px; }
+    .highlight {
+        background-color: red;
+        max-width: 1500px;
+    }
 </style>
+
 <head>
     <title> Content Portal</title>
 
@@ -25,10 +29,12 @@
             BindControls();
             $("#search").click(function () {
                 console.log('Clicked');
+                var language = $('#language').val();
+
                 $.ajax({
-                    url: 'https://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
+                    url: 'http://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
                         + '&operatingSystem=' + $('#operatingSystem').val() + '&worksWith=' + $('#worksWith').val()
-                        + '&year=' + $('#year').val(),
+                        + '&year=' + $('#year').val() + '&language=' + language,
                     type: "GET",
                     success: function (data, status) {
                         console.log(data);
@@ -64,10 +70,10 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.Title + '</h5>';
-            if (item.LinkType == 'Edify'){
-                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category +   '</h5>';    
-            }else{
-                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' +   item.ContentType + ' : ' + item.Category +   '</h5>';
+            if (item.LinkType == 'Edify') {
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.Category + '</h5>';
+            } else {
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.LinkType + ' : ' + item.ContentType + ' : ' + item.Category + '</h5>';
             }
             searchedContentHtml = searchedContentHtml + ' <a href="' + item.URL + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
             searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
@@ -84,10 +90,10 @@
             searchedContentHtml = searchedContentHtml + '<div class="card" style="width: 18rem;">';
             searchedContentHtml = searchedContentHtml + '<div class="card-body">';
             searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.title + '</h5>';
-            if (item.LinkType == 'Edify'){
-                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory +   '</h5>';    
-            }else{
-                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory +   '</h5>';
+            if (item.LinkType == 'Edify') {
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory + '</h5>';
+            } else {
+                searchedContentHtml = searchedContentHtml + '<h5 class="card-title">' + item.type + ' : ' + item.subCategory + '</h5>';
             }
             searchedContentHtml = searchedContentHtml + ' <a href="' + item.url + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
             searchedContentHtml = searchedContentHtml + '</div>  </div> <br/>';
@@ -108,11 +114,12 @@
 
         }
         function getKnowledge(selectedDevice) {
+            var language = $('#language').val();
             $("#knowledge").html('Fetching Content...');
             console.log(selectedDevice.Model);
-            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand);
+            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language);
             $.ajax({
-                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand,
+                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language,
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -124,7 +131,7 @@
                         var knowledgeHtml = '';
                         for (let i = 0; i < records.length; i++) {
 
-                            if(records[i].type == 'AssurantHowToContentItem' || records[i].type == 'AssurantTroubleshootingContentItem') {
+                            if (records[i].type == 'AssurantHowToContentItem' || records[i].type == 'AssurantTroubleshootingContentItem') {
                                 continue;
                             }
                             // knowledgeHtml = knowledgeHtml + "<p> " + records[i].Content_Link__c + "</p>";
@@ -135,8 +142,8 @@
                             knowledgeHtml = knowledgeHtml + ' <p class="card-text"> Sub Category : ' + records[i].subCategory + '</p>';
                             knowledgeHtml = knowledgeHtml + ' <a href="' + records[i].url + ' "target="_blank" class="btn btn-primary">Go to Link</a>';
                             knowledgeHtml = knowledgeHtml + '</div>  </div> <br/>';
-                        }   
-                        if(knowledgeHtml == '') {
+                        }
+                        if (knowledgeHtml == '') {
                             knowledgeHtml = 'No Records Found';
                         }
                         $("#knowledge").html(knowledgeHtml);
@@ -157,11 +164,11 @@
             $("#edifyContent").html('Fetching Content...');
             $("#searchedContent").html('');
             $("#content").val("")
-
+            var language = $('#language').val();
             console.log(selectedDevice.Model);
-            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val());
+            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val() + '&language=' + language);
             $.ajax({
-                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val(),
+                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val() + '&language=' + language,
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -212,19 +219,23 @@
 
         function _resizeMenu() {
             console.log('resizing')
-            this.menu.element.outerWidth( 900 );
+            this.menu.element.outerWidth(900);
         }
 
         function BindControls() {
+
+
             $("#device").autocomplete({
                 classes: {
                     "ui-autocomplete": "highlight",
-                  },
+                },
                 source: function (request, response) {
                     console.log('here');
                     console.log(request);
+                    var language = $('#language').val();
+
                     $.ajax({
-                        url: "https://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term,
+                        url: "http://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term + '&language=' + language,
                         dataType: "json",
                         type: "GET",
                         contentType: "application/json; charset=utf-8",
@@ -233,9 +244,9 @@
                             globalDevices = data.deviceMetadata;
                             var arrBooks = [];
                             $.map(data.deviceMetadata, function (item) {
-                                
-                                    arrBooks.push({ "value": item.model, "label": item.displayName });
-                                
+
+                                arrBooks.push({ "value": item.model, "label": item.displayName });
+
                             })
                             console.log(arrBooks)
                             response(arrBooks);
@@ -277,9 +288,9 @@
                     if (selectedItem) {
                         var model = selectedItem.model
                         var brand = selectedItem.brand
-                        console.log("https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term)
+                        console.log("http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language)
                         $.ajax({
-                            url: "https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS  + '&name=' + request.term,
+                            url: "http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language,
                             dataType: "json",
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
@@ -287,16 +298,16 @@
                                 console.log(data);
                                 if (data.searchResults.length > 0) {
                                     data.searchResults.forEach((item) => {
-                                        item.title = item.type + " : " + item.title 
+                                        item.title = item.type + " : " + item.title
                                     });
                                     searchedContents = data.searchResults;
                                 } else {
-                                    searchedContents = 'No Data Found'     
+                                    searchedContents = 'No Data Found'
                                 }
                                 var arrBooks = [];
                                 $.map(data.searchResults, function (item) {
                                     if (!arrBooks.find(item1 => item1.value === item.title)) {
-                            //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
+                                        //arrBooks.push({ "value": item.Id, "label": item.LinkType + '-' + item.ContentType + '-' + item.Title });
                                         arrBooks.push({ "value": item.title, "label": item.title });
 
                                     }
@@ -357,7 +368,6 @@
             $('#knowledgeType1').change(function () {
                 getKnowledge(selectedItem)
             });
-
         });
     </script>
 </head>
@@ -366,6 +376,12 @@
     <div class="row">
         <div class="col-sm-3">
             <form style="padding: 20px;">
+                <label class="page1">Language</label>
+
+                <select id="language" name="language" placeholder="Select Language">
+                    <option value='en-EN'>English</option>
+                    <option value='es-ES'>Spanish</option>
+                </select><br/>
                 <label for="device">Device Name:</label><br>
                 <input type="text" id="device" name="device" placeholder="Search Your Device"><br>
                 <br />
@@ -374,7 +390,7 @@
 
                 <div class="row">
                     <div class="col-sm-6">
-                       <!-- <label class="page1">Device Category</label>
+                        <!-- <label class="page1">Device Category</label>
                         <div class="tooltips" title="Please select the Device Category">
                             <select id="deviceCategory" name="deviceCategory" placeholder="Select Device Category">
                                 <option value=''>Select Device Category</option>
@@ -397,7 +413,7 @@
                         </div>-->
                     </div>
 
-                   <!-- <div class="col-sm-6"><label class="page1">Device Type</label>
+                    <!-- <div class="col-sm-6"><label class="page1">Device Type</label>
                         <div class="tooltips" title="Please select the Device Type">
                             <select id="deviceType" name="deviceType" placeholder="Device Type "></select>
                         </div>
@@ -495,7 +511,7 @@
                 </div>
                 <br />
                 <br />
-               <!-- <div class="row">
+                <!-- <div class="row">
                     <div class="col-sm-6">
                         <input type="button" value="Search" id="search">
                     </div>
@@ -549,16 +565,6 @@
                 <option value='IOS'>iOS</option>
                 <option value='ANDRIOD'>Android</option>
                 <option value='N/A'>N/A</option>
-            </select>
-            <br />
-            <label class="page1">Client</label>
-            <!--<select id="client" name="client" placeholder="Select Client">
-                <option value='T-Mobile PHD'>T-Mobile PHD  - Edify</option>
-                <option value='Bluegrass PTP'>Bluegrass PTP  - Linked Only</option>
-            </select>-->
-            <select id="language" name="language" placeholder="Select Language">
-                <option value='en'>English</option>
-                <option value='es'>Spanish</option>
             </select>
             <br />
             <label for="content">Content Search:</label><br>
