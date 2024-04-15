@@ -32,7 +32,7 @@
                 var language = $('#language').val();
 
                 $.ajax({
-                    url: 'http://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
+                    url: 'https://contentsdkuat.azurewebsites.net/sdevices?deviceCategory=' + $('#deviceCategory').val() + '&deviceType=' + $('#deviceType').val()
                         + '&operatingSystem=' + $('#operatingSystem').val() + '&worksWith=' + $('#worksWith').val()
                         + '&year=' + $('#year').val() + '&language=' + language,
                     type: "GET",
@@ -117,9 +117,9 @@
             var language = $('#language').val();
             $("#knowledge").html('Fetching Content...');
             console.log(selectedDevice.Model);
-            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language);
+            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language);
             $.ajax({
-                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language,
+                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#knowledgeType1").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.brand + '&language=' + language,
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -166,9 +166,9 @@
             $("#content").val("")
             var language = $('#language').val();
             console.log(selectedDevice.Model);
-            console.log("http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val() + '&language=' + language);
+            console.log("https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.Model + '&brand=' + selectedDevice.Brand + '&platform=' + $("#eOS1").val() + '&language=' + language);
             $.ajax({
-                url: "http://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val() + '&language=' + language,
+                url: "https://contentsdkuat.azurewebsites.net/scategory?category=" + $("#guideType").val() + '&model=' + selectedDevice.model + '&brand=' + selectedDevice.model + '&platform=' + $("#eOS1").val() + '&language=' + language,
                 type: "GET",
                 success: function (data, status) {
                     if (!data) {
@@ -235,7 +235,7 @@
                     var language = $('#language').val();
 
                     $.ajax({
-                        url: "http://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term + '&language=' + language,
+                        url: "https://contentsdkuat.azurewebsites.net/sdevices?name=" + request.term + '&language=' + language,
                         dataType: "json",
                         type: "GET",
                         contentType: "application/json; charset=utf-8",
@@ -288,9 +288,9 @@
                     if (selectedItem) {
                         var model = selectedItem.model
                         var brand = selectedItem.brand
-                        console.log("http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language)
+                        console.log("https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language)
                         $.ajax({
-                            url: "http://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language,
+                            url: "https://contentsdkuat.azurewebsites.net/scontent?brand=" + brand + '&model=' + model + '&platform=' + eOS + '&name=' + request.term + '&language=' + language,
                             dataType: "json",
                             type: "GET",
                             contentType: "application/json; charset=utf-8",
